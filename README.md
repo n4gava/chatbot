@@ -29,12 +29,12 @@ import { ChatBotClient } from "./chatBot.client/client.types";
 
 export default class replyAllMessages implements ChatBotClient.IMessageHandler {
   
-  // this method will check if this handler will reply the message
+	// this method will check if this handler will reply the message
 	shouldReply(from: string, message: string, client: ChatBotClient.IBotClient): boolean {
 		return true;
 	}
   
-  // reply the message
+	// reply the message
 	replyMessage(from: string, message: string, client: ChatBotClient.IBotClient): void {
 		client.sendMessage(from, `you sent ${message}`);
 	}
@@ -50,9 +50,9 @@ After, you will need register it on container in `Startup.ts`file.
 		const messagesHandlers: any[] = [];
 		messagesHandlers.push(GreetingMessage);
     
-    // register my handler on container
-    messagesHandlers.push(replyAllMessages);
 
+		// register my handler on container
+    		messagesHandlers.push(replyAllMessages);
 		messagesHandlers.map((handler) => {
 			container.register<ChatBotClient.IMessageHandler>("IMessageHandler", {
 				useClass: handler,

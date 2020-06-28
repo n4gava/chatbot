@@ -44,7 +44,7 @@ export default class replyAllMessages implements ChatBotClient.IMessageHandler {
 After, you will need register it on container in `Startup.ts`file.
 
 ```javascript
-  { ... }
+	{ ... }
   
 	private registerMessagesHandlers = (): void => {
 		const messagesHandlers: any[] = [];
@@ -59,6 +59,6 @@ After, you will need register it on container in `Startup.ts`file.
 			});
 		});
 	};
-  
-  { ... }
+	
+  	{ ... }
 ```

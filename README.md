@@ -1,6 +1,6 @@
 # Chatbot (Whatsapp bot)
 Simple chatbot that reply messages. 
-There is currently only a whatsapp client implementation using [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
+Currently, there is only one whatsapp client implementation using [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
 
 ## Quick Start
 

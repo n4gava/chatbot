@@ -21,7 +21,7 @@ yarn install
 yarn start
 ```
 
-## How implement news IMessageHandler
+## How implement new IMessageHandler
 
 The project contains a single message handler that reply "oi" messages.
 

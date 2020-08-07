@@ -1,11 +1,11 @@
 # Chatbot (Whatsapp bot)
-Simple chatbot that reply messages. 
+Simple chatbot that replies messages. 
 
 Currently, there is only one whatsapp client implementation using [whatsapp-web.js](https://github.com/pedroslopez/whatsapp-web.js)
 
 ## Quick Start
 
-First of all, you will need node 10.12.0 or newest because this project use recursive option for create directories.
+First of all, you will need node 10.12.0 or newer because this project uses recursive option for creating directories.
 
 After that, just run the following commands:
 
@@ -23,9 +23,9 @@ yarn start
 
 ## How implement new IMessageHandler
 
-The project contains a single message handler that reply "oi" messages.
+The project contains a single message handler that replies "oi" messages.
 
-For create a new handler, first of all, create a new class that inherit `ChatBotClient.IMessageHandler`
+For creating a new handler, first of all, create a new class that inherits `ChatBotClient.IMessageHandler`
 
 ```javascript
 import { ChatBotClient } from "./chatBot.client/client.types";
@@ -44,7 +44,7 @@ export default class replyAllMessages implements ChatBotClient.IMessageHandler {
 }
 ```
 
-After, you have to register it on container in `Startup.ts` file.
+After that, you have to register it on container in `Startup.ts` file.
 
 ```javascript
 { ... }

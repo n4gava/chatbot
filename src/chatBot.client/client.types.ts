@@ -6,8 +6,18 @@ export namespace ChatBotClient {
 	}
 
 	export interface IMessageHandler {
-		shouldReply(from: string, message: string, client: IBotClient): boolean;
+		shouldHandle(message: Message, client: IBotClient): boolean;
 
-		replyMessage(from: string, message: string, client: IBotClient): void;
+		handle(message: Message, client: IBotClient): void;
+	}
+
+	export interface Message {
+		text: string;
+		senderId: string;
+		groupId: string;
+		senderName: string;
+		groupName: string;
+		type: "chat" | "voice" | "image" | "video" | "other";
+		hasMedia: boolean;
 	}
 }

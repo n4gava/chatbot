@@ -6,27 +6,35 @@ import { ChatBotQrode } from "./chatBot.qrcode/qrcode.types";
 import QrcodeService from "./chatBot.qrcode/qrcode.service";
 import { ChatBotFileSystem } from "./chatBot.fileSystem/fileSystem.types";
 import FileSystem from "./chatBot.fileSystem/fileSystem";
-import GreetingMessage from "./greetingMessage";
+import SummarizeText from "./summarizeText";
+import ConversationsStore, { IConversationsStore } from "./conversationsStore";
+import StoreMessages from "./storeMessages";
 
 export default class Startup {
 	public Configure(): void {
+		require("dotenv").config();
 		this.registerServices();
 		this.registerMessagesHandlers();
 	}
 
 	public Run(): void {
-		const botClient = container.resolve<ChatBotClient.IBotClient>("IBotClient");
+		const botClient =
+			container.resolve<ChatBotClient.IBotClient>("IBotClient");
 		botClient.initialize();
 	}
 
 	private registerMessagesHandlers = (): void => {
 		const messagesHandlers: any[] = [];
-		messagesHandlers.push(GreetingMessage);
+		messagesHandlers.push(SummarizeText);
+		messagesHandlers.push(StoreMessages);
 
 		messagesHandlers.map((handler) => {
-			container.register<ChatBotClient.IMessageHandler>("IMessageHandler", {
-				useClass: handler,
-			});
+			container.register<ChatBotClient.IMessageHandler>(
+				"IMessageHandler",
+				{
+					useClass: handler,
+				}
+			);
 		});
 	};
 
@@ -34,6 +42,15 @@ export default class Startup {
 		container.register<ChatBotClient.IBotClient>("IBotClient", {
 			useClass: WhatsAppClient,
 		});
+
+		const teste = new ConversationsStore();
+		container.register<IConversationsStore>("IConversationsStore", {
+			useValue: teste,
+		});
+
+		var teste2 = container.resolve<IConversationsStore>(
+			"IConversationsStore"
+		);
 
 		container.register<ChatBotQrode.IQrcodeService>("IQrcodeService", {
 			useClass: QrcodeService,

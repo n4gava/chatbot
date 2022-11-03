@@ -1,4 +1,11 @@
-import { Client, ClientOptions, ClientSession, Message } from "whatsapp-web.js";
+import {
+	Client,
+	ClientOptions,
+	ClientSession,
+	Message,
+	LocalAuth,
+	MessageTypes,
+} from "whatsapp-web.js";
 import { injectAll, injectable, inject } from "tsyringe";
 import { ChatBotClient } from "../chatBot.client/client.types";
 import BaseBotClient from "../chatBot.client/client.abstract";
@@ -13,14 +20,16 @@ export default class WhatsAppClient extends BaseBotClient {
 	public OnQrCodeGenerated = () => {};
 
 	constructor(
-		@injectAll("IMessageHandler") receiveMessagesHandler: ChatBotClient.IMessageHandler[],
-		@inject("IQrcodeService") private qrcodeService: ChatBotQrode.IQrcodeService,
+		@injectAll("IMessageHandler")
+		receiveMessagesHandler: ChatBotClient.IMessageHandler[],
+		@inject("IQrcodeService")
+		private qrcodeService: ChatBotQrode.IQrcodeService,
 		@inject("IFileSystem") private fileSystem: ChatBotFileSystem.IFileSystem
 	) {
 		super(receiveMessagesHandler);
 
 		const options: ClientOptions = {};
-		options.session = this.loadCurrentSession();
+		options.authStrategy = new LocalAuth({ clientId: "client-one" });
 		this._client = new Client(options);
 	}
 
@@ -32,6 +41,7 @@ export default class WhatsAppClient extends BaseBotClient {
 		this._client.on("qr", this.handleOnQr);
 		this._client.on("ready", this.handleOnReady);
 		this._client.on("message", this.handleOnReceiveMessage);
+		this._client.on("message_create", this.handleOnReceiveMessage);
 		this._client.on("authenticated", this.handleOnAuthenticated);
 
 		this._client.initialize();
@@ -45,21 +55,32 @@ export default class WhatsAppClient extends BaseBotClient {
 		console.log("Whatsapp is ready");
 	};
 
-	private handleOnAuthenticated = (clientSession: ClientSession) => {
-		this.saveCurrentSession(clientSession);
-	};
+	private handleOnAuthenticated = (clientSession: ClientSession) => {};
 
-	private handleOnReceiveMessage = (msg: Message) => {
-		this.receiveMessageHandler(msg.from, msg.body);
-	};
+	private handleOnReceiveMessage = async (msg: Message) => {
+		const contact = await msg.getContact();
+		const chat = await msg.getChat();
 
-	private loadCurrentSession = (): ClientSession | undefined => {
-		const session = this.fileSystem.readFile(this._sessionFile);
-		return session ? (JSON.parse(session) as ClientSession) : undefined;
-	};
+		const message: ChatBotClient.Message = {
+			senderId: msg.author ?? msg.from,
+			groupId: msg.from,
+			groupName: chat.name,
+			senderName:
+				contact.name ?? contact.pushname ?? msg.author ?? msg.from,
+			hasMedia: msg.hasMedia,
+			text: msg.body,
+			type:
+				msg.type === MessageTypes.TEXT
+					? "chat"
+					: msg.type === MessageTypes.VOICE
+					? "voice"
+					: msg.type === MessageTypes.IMAGE
+					? "image"
+					: msg.type === MessageTypes.VIDEO
+					? "video"
+					: "other",
+		};
 
-	private saveCurrentSession = (clientSession: ClientSession) => {
-		const fileData = JSON.stringify(clientSession);
-		this.fileSystem.writeFile(this._sessionFile, fileData);
+		this.receiveMessageHandler(message);
 	};
 }

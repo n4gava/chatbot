@@ -40,7 +40,7 @@ export default class WhatsAppClient extends BaseBotClient {
 	public initialize = (): void => {
 		this._client.on("qr", this.handleOnQr);
 		this._client.on("ready", this.handleOnReady);
-		this._client.on("message", this.handleOnReceiveMessage);
+		//this._client.on("message", this.handleOnReceiveMessage);
 		this._client.on("message_create", this.handleOnReceiveMessage);
 		this._client.on("authenticated", this.handleOnAuthenticated);
 
@@ -69,6 +69,9 @@ export default class WhatsAppClient extends BaseBotClient {
 				contact.name ?? contact.pushname ?? msg.author ?? msg.from,
 			hasMedia: msg.hasMedia,
 			text: msg.body,
+			fromMe: msg.fromMe,
+			isGroup: chat.isGroup,
+			knowContact: !!contact.name,
 			type:
 				msg.type === MessageTypes.TEXT
 					? "chat"

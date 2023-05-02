@@ -9,6 +9,7 @@ import FileSystem from "./chatBot.fileSystem/fileSystem";
 import SummarizeText from "./summarizeText";
 import ConversationsStore, { IConversationsStore } from "./conversationsStore";
 import StoreMessages from "./storeMessages";
+import AssistantChatBot from "./assistantChatBot";
 
 export default class Startup {
 	public Configure(): void {
@@ -25,8 +26,9 @@ export default class Startup {
 
 	private registerMessagesHandlers = (): void => {
 		const messagesHandlers: any[] = [];
-		messagesHandlers.push(SummarizeText);
-		messagesHandlers.push(StoreMessages);
+		//messagesHandlers.push(SummarizeText);
+		//messagesHandlers.push(StoreMessages);
+		messagesHandlers.push(AssistantChatBot);
 
 		messagesHandlers.map((handler) => {
 			container.register<ChatBotClient.IMessageHandler>(

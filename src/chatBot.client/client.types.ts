@@ -19,5 +19,8 @@ export namespace ChatBotClient {
 		groupName: string;
 		type: "chat" | "voice" | "image" | "video" | "other";
 		hasMedia: boolean;
+		isGroup: boolean;
+		fromMe: boolean;
+		knowContact: boolean;
 	}
 }

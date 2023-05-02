@@ -1,5 +1,5 @@
 import { ChatBotClient } from "./chatBot.client/client.types";
-import { Configuration, OpenAIApi } from "openai";
+import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from "openai";
 import { injectAll, injectable, inject } from "tsyringe";
 import { IConversationsStore } from "./conversationsStore";
 
@@ -25,7 +25,9 @@ export default class SummarizeText implements ChatBotClient.IMessageHandler {
 		message: ChatBotClient.Message,
 		client: ChatBotClient.IBotClient
 	): boolean {
-		return message.type === "chat" && message.groupId === this.myNumberId;
+		const handle =
+			message.type === "chat" && message.groupId === this.myNumberId;
+		return handle;
 	}
 
 	handle(
@@ -42,7 +44,6 @@ export default class SummarizeText implements ChatBotClient.IMessageHandler {
 
 	async sendSummarize(client: ChatBotClient.IBotClient): Promise<void> {
 		const groups = this.conversationStore.getGroups();
-
 		await groups.map(async (group) => {
 			const summary = await this.summarize(group);
 			client.sendMessage(this.myNumberId, `Resumo do grupo ${group}:`);
@@ -52,25 +53,34 @@ export default class SummarizeText implements ChatBotClient.IMessageHandler {
 	}
 
 	async summarize(group: string): Promise<string> {
-		let prompt =
-			"Converter a conversa em um resumo de primeira mão em portugues:\n\n";
-
 		const conversation = this.conversationStore.getConversation(group);
 
-		conversation.map((message) => {
-			prompt += message.fromName + ":" + message.text + "\n";
+		const messages: ChatCompletionRequestMessage[] = conversation.map(
+			(c) => {
+				return {
+					content: c.fromName + ":" + c.text,
+					role: "user",
+				};
+			}
+		);
+
+		messages.push({
+			content: "Resuma a conversa entre os usuários acima",
+			role: "user",
 		});
 
-		const response = await this.openai.createCompletion({
-			model: "text-davinci-002",
-			prompt: prompt + "\n\n",
-			temperature: 0,
-			max_tokens: 500,
-			top_p: 1,
-			frequency_penalty: 0,
-			presence_penalty: 0,
+		messages.push({
+			content:
+				"Você é um assistente que resume as mensagens da conversa, dando ênfase para os tópicos mais importantes.",
+			role: "system",
 		});
 
-		return response.data.choices[0].text?.trimStart() ?? "";
+		const response = await this.openai.createChatCompletion({
+			model: "gpt-3.5-turbo",
+			messages: messages,
+			temperature: 0.3,
+			max_tokens: 1000,
+		});
+		return response.data.choices[0].message?.content ?? "";
 	}
 }

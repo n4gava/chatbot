@@ -34,7 +34,8 @@ export default class StoreMessages implements ChatBotClient.IMessageHandler {
 		this.conversationStore.addMessage(
 			message.groupName,
 			message.senderName,
-			message.text
+			message.text,
+			false
 		);
 	}
 }

@@ -34,12 +34,7 @@ export default class AssistantChatBot implements ChatBotClient.IMessageHandler {
 			message.text = message.text.substring("#bot ".length);
 		}
 		
-		return (
-			shouldHandle
-			message.senderName === "Bárbara Amor" ||
-			message.senderName === "Joao Carlos Joju" ||
-			message.senderName === "Joao Joju Joju"
-		);
+		return shouldHandle;
 	}
 
 	handle(

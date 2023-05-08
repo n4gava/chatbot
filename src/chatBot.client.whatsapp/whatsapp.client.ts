@@ -82,6 +82,8 @@ export default class WhatsAppClient extends BaseBotClient {
 					: msg.type === MessageTypes.VIDEO
 					? "video"
 					: "other",
+			isStatus: msg.isStatus,
+			timestamp: msg.timestamp
 		};
 
 		this.receiveMessageHandler(message);

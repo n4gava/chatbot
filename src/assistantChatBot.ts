@@ -27,12 +27,14 @@ export default class AssistantChatBot implements ChatBotClient.IMessageHandler {
 	): boolean {
 		const shouldHandle = !message.isGroup && !message.knowContact;
 
-		return (
-			shouldHandle ||
-			message.senderName === "Bárbara Amor" ||
-			message.senderName === "Joao Carlos Joju" ||
-			message.senderName === "Joao Joju Joju"
-		);
+		let shouldHandle = !message.isGroup && !message.knowContact && !message.isStatus;
+		
+		if (message.text.startsWith('#bot ')) {
+			shouldHandle = true;
+			message.text = message.text.substring("#bot ".length);
+		}
+		
+		return shouldHandle;
 	}
 
 	handle(
@@ -48,6 +50,7 @@ export default class AssistantChatBot implements ChatBotClient.IMessageHandler {
 
 		this.conversationStore.replyGroup(message.groupName, 5000, (c) =>
 			this.replyMessages(c, message, client)
+			.catch(reason => console.log(`replyMessages rejected: ${reason}`))
 		);
 	}
 

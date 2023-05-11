@@ -22,5 +22,7 @@ export namespace ChatBotClient {
 		isGroup: boolean;
 		fromMe: boolean;
 		knowContact: boolean;
+		isStatus: boolean;
+		timestamp: number;
 	}
 }
